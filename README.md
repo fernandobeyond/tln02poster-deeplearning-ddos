@@ -1,6 +1,6 @@
 # Sistemas de Detección de Ataques DDoS basados en Deep Learning en Entornos de Red
 
-Repositorio oficial de respaldo experimental para el póster de investigación **"Sistemas de Detección de Ataques DDoS basados en Deep Learning en Entornos de Red"**. Este proyecto implementa una arquitectura modular con `main.py` como nodo central de ejecución sobre los múltiples archivos CSV del dataset **CIC-DDoS2019** ubicados en la carpeta `data/`.
+Repositorio oficial de respaldo experimental para el póster de investigación **"Sistemas de Detección de Ataques DDoS basados en Deep Learning en Entornos de Red"**. Este proyecto implementa una arquitectura modular con [`main.py`](main.py) como nodo central de ejecución sobre los múltiples archivos CSV del dataset **CIC-DDoS2019** ubicados en la carpeta [`data/`](data/).
 
 ---
 
@@ -8,16 +8,19 @@ Repositorio oficial de respaldo experimental para el póster de investigación *
 
 - [Sistemas de Detección de Ataques DDoS basados en Deep Learning en Entornos de Red](#sistemas-de-detección-de-ataques-ddos-basados-en-deep-learning-en-entornos-de-red)
   - [Tabla de Contenidos](#tabla-de-contenidos)
-  - [1. Introducción y Contexto](#1-introducción-y-contexto)
+  - [1. Introducción](#1-introducción)
     - [Taxonomía de Enfoques del Estado del Arte (2019–2024)](#taxonomía-de-enfoques-del-estado-del-arte-20192024)
     - [Comparativo de Modelos Neuronales de la Literatura](#comparativo-de-modelos-neuronales-de-la-literatura)
     - [Brechas Identificadas](#brechas-identificadas)
   - [2. Metodología: Protocolo Común sobre CIC-DDoS2019](#2-metodología-protocolo-común-sobre-cic-ddos2019)
     - [Los 19 Atributos del Protocolo](#los-19-atributos-del-protocolo)
-  - [3. Resultados Experimentales del Póster](#3-resultados-experimentales-del-póster)
-    - [Comparación Homogénea de Modelos](#comparación-homogénea-de-modelos)
-    - [Matriz de Confusión de LightGBM (Conjunto de Prueba)](#matriz-de-confusión-de-lightgbm-conjunto-de-prueba)
-    - [Aportes en Interpretabilidad (XAI) y Calibración (ECE)](#aportes-en-interpretabilidad-xai-y-calibración-ece)
+  - [3. Resultados Experimentales Obtenidos (`resultados_poster/`)](#3-resultados-experimentales-obtenidos-resultados_poster)
+    - [3.1 Resumen del Dataset Procesado](#31-resumen-del-dataset-procesado)
+    - [3.2 Comparativa Global de Modelos (`tabla_modelos.csv`)](#32-comparativa-global-de-modelos-tabla_modeloscsv)
+    - [3.3 Matriz de Confusión de LightGBM en Prueba](#33-matriz-de-confusión-de-lightgbm-en-prueba)
+    - [3.4 Interpretabilidad / XAI (`importancias.csv`)](#34-interpretabilidad--xai-importanciascsv)
+    - [3.5 Calibración de Confianza (`calibracion.csv`)](#35-calibración-de-confianza-calibracioncsv)
+    - [3.6 Comparativa de Referencia del Póster](#36-comparativa-de-referencia-del-póster)
   - [4. Arquitectura Modular](#4-arquitectura-modular)
     - [Estructura del Proyecto](#estructura-del-proyecto)
     - [Diseño de Clases y Módulos](#diseño-de-clases-y-módulos)
@@ -30,7 +33,7 @@ Repositorio oficial de respaldo experimental para el póster de investigación *
 
 ---
 
-## 1. Introducción y Contexto
+## 1. Introducción
 
 Los ataques DDoS saturan servicios críticos y camuflan su tráfico imitando patrones legítimos, haciendo que los sistemas de detección de intrusos (IDS) basados en firmas resulten insuficientes. Aunque la literatura reciente propone soluciones con **Deep Learning**, cada estudio emplea conjuntos de datos, preprocesamientos y métricas heterogéneas que impiden comparaciones directas.
 
@@ -71,7 +74,7 @@ Este trabajo **revisa 8 modelos neuronales del estado del arte (2019–2024)** y
 
 ```mermaid
 flowchart LR
-    D["<b>CIC-DDoS2019 (data/*.csv)</b><br/>2,660,377 flujos · 19 atributos"] --> P["<b>Preprocesamiento</b><br/>Imputación mediana · StandardScaler<br/>class_weight = balanced"]
+    D["<b>CIC-DDoS2019 (data/*.csv)</b><br/>19 atributos de flujo"] --> P["<b>Preprocesamiento</b><br/>Imputación mediana · StandardScaler<br/>class_weight = balanced"]
     P --> T["<b>Enfoque A: Tabular</b><br/>Regresión Logística · MLP · MLP (Optuna) · LightGBM"]
     P --> S["<b>Enfoque B: Secuencial</b><br/>Ventanas 20×19 (stride=5) · CNN-LSTM"]
     T --> E["<b>Evaluación Integral</b><br/>F1, PR-AUC, ROC-AUC · XAI (Permutation, KernelSHAP) · Calibración (ECE, Brier)"]
@@ -106,45 +109,92 @@ flowchart LR
 
 ---
 
-## 3. Resultados Experimentales del Póster
+## 3. Resultados Experimentales Obtenidos (`resultados_poster/`)
 
-### Comparación Homogénea de Modelos
+A continuación se documentan los resultados generados en [`resultados_poster/`](resultados_poster/) al ejecutar el pipeline completo sobre los 8 archivos CSV de ataques DrDoS en `data/`.
 
-| Modelo | Enfoque | F1-Score | PR-AUC | Accuracy |
+### 3.1 Resumen del Dataset Procesado
+
+| Parámetro | Valor |
+| :--- | ---: |
+| **Flujos totales procesados** | **28,001,999** |
+| **Atributos por flujo** | **19** |
+| **Flujos de ataque (clase 1)** | **27,974,480** (99.90%) |
+| **Flujos benignos (clase 0)** | **27,519** (0.10%) |
+| **Partición de Entrenamiento (70%)** | **19,601,399** |
+| **Partición de Validación (10%)** | **2,800,200** |
+| **Partición de Prueba (20%)** | **5,600,400** |
+| **Secuencias generadas (`20 × 19`, `stride=5`)** | **5,600,396** |
+
+### 3.2 Comparativa Global de Modelos (`tabla_modelos.csv`)
+
+| Modelo | Enfoque | F1-Score | Precision | Recall | PR-AUC | ROC-AUC | Accuracy | FPR |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Regresión Logística | Tabular | 0.998120 | 0.999997 | 0.996250 | 1.000000 | 0.999686 | 0.996251 | 0.3270% |
+| CNN-LSTM | Secuencial | 0.998592 | 0.999995 | 0.997194 | 1.000000 | 0.999523 | 0.997191 | 0.5484% |
+| MLP (Optuna) | Tabular | 0.998929 | 0.999996 | 0.997865 | 0.999999 | 0.999482 | 0.997863 | 0.3815% |
+| MLP (original) | Tabular | 0.999236 | 0.999992 | 0.998481 | 0.999999 | 0.999437 | 0.998475 | 0.8539% |
+| **LightGBM** | **Tabular** | **0.999932** | **0.999998** | **0.999866** | **1.000000** | **0.999996** | **0.999864** | **0.1999%** |
+
+![Comparativa de modelos F1-Score](resultados_poster/f1_modelos.png)
+
+> **Hallazgo experimental confirmado**: Bajo un protocolo homogéneo sobre CIC-DDoS2019, los modelos tabulares (**LightGBM** y **MLP**) superan al modelo híbrido secuencial **CNN-LSTM** tanto en F1-Score y Recall como en tasa de falsos positivos (FPR).
+
+### 3.3 Matriz de Confusión de LightGBM en Prueba
+
+Evaluación sobre **5,600,400 flujos de prueba**:
+
+| | Predicción: Benigno | Predicción: Ataque |
+| :--- | :---: | :---: |
+| **Real: Benigno** | **5,493** (Verdadero Negativo) | **11** (Falso Positivo) |
+| **Real: Ataque** | **749** (Falso Negativo) | **5,594,147** (Verdadero Positivo) |
+
+- **Exactitud (Accuracy)**: `99.9864%`
+- **Sensibilidad (Recall)**: `99.9866%`
+- **Tasa de Falsos Positivos (FPR)**: `0.1999%` (solo 11 falsas alarmas en 5,504 flujos benignos).
+
+### 3.4 Interpretabilidad / XAI (`importancias.csv`)
+
+Comparación del Top 5 de atributos más determinantes para el modelo tabular frente al secuencial:
+
+| Rango | LightGBM — *Permutation Importance* (Caída de F1) | Valor | CNN-LSTM — *KernelSHAP* ($\lvert\text{SHAP}\rvert$ medio en 20 pasos) | Valor |
+| :---: | :--- | :---: | :--- | :---: |
+| **1** | `Fwd Packet Length Mean` | `0.000527` | `Init_Win_bytes_forward` | `0.000586` |
+| **2** | `Init_Win_bytes_forward` | `0.000491` | `Flow Bytes/s` | `0.000517` |
+| **3** | `Flow Bytes/s` | `0.000217` | `Fwd Packet Length Max` | `0.000440` |
+| **4** | `Fwd Packet Length Min` | `0.000205` | `Fwd Packet Length Mean` | `0.000365` |
+| **5** | `min_seg_size_forward` | `0.000120` | `Fwd Packet Length Min` | `0.000343` |
+
+### 3.5 Calibración de Confianza (`calibracion.csv`)
+
+Evaluación del *Expected Calibration Error* (ECE, 10 bins) y *Brier Score* antes y después de calibrar las probabilidades:
+
+| Modelo | Método de Calibración | ECE | Brier Score |
+| :--- | :--- | :---: | :---: |
+| **LightGBM** | Original (sin calibrar) | `0.000644` | `0.000118` |
+| **LightGBM** | **Regresión Isotónica** | **`0.000005`** (`4.94e-06`) | **`0.000012`** (`1.21e-05`) |
+| **LightGBM** | Sigmoide (Platt Scaling) | `0.000017` (`1.65e-05`) | `0.000016` (`1.60e-05`) |
+| **CNN-LSTM** | Original (sin calibrar) | `0.003085` | `0.002094` |
+| **CNN-LSTM** | Temperature Scaling ($T = 1.228$) | `0.003638` | `0.002037` |
+
+- La **regresión isotónica en LightGBM** reduce el error de calibración esperado (ECE) en más de dos órdenes de magnitud (`0.000644` $\rightarrow$ `0.000005`) y el Brier Score en casi diez veces (`0.000118` $\rightarrow$ `0.000012`).
+
+### 3.6 Comparativa de Referencia del Póster
+
+En el corte balanceado de 2,660,377 flujos reportado en la lámina del póster (532,076 flujos de prueba), la tendencia entre arquitecturas se mantiene de forma consistente:
+
+| Modelo | Enfoque | F1 (Póster) | PR-AUC (Póster) | Accuracy (Póster) |
 | :--- | :---: | :---: | :---: | :---: |
 | Regresión Logística (base) | Tabular | 0.6533 | 0.8229 | 0.7821 |
 | CNN-LSTM híbrido | Secuencial | 0.8939 | 0.9527 | 0.9550 |
 | MLP (Optuna) | Tabular | 0.9809 | 0.9981 | 0.9920 |
 | **LightGBM** | **Tabular** | **0.9973** | **0.9999** | **0.9989** |
 
-> **Hallazgo principal**: Contrario a la tendencia del estado del arte que favorece modelos híbridos secuenciales complejos, bajo un protocolo estandarizado sobre CIC-DDoS2019 el enfoque tabular (**LightGBM** y **MLP optimizado con Optuna**) supera ampliamente al híbrido secuencial **CNN-LSTM**.
-
-### Matriz de Confusión de LightGBM (Conjunto de Prueba)
-
-Evaluado sobre **532,076 flujos de prueba**:
-
-| | Predicción: Benigno | Predicción: Ataque |
-| :--- | :---: | :---: |
-| **Real: Benigno** | **420,430** (Verdadero Negativo) | **553** (Falso Positivo) |
-| **Real: Ataque** | **46** (Falso Negativo) | **111,047** (Verdadero Positivo) |
-
-- **Ataques no detectados (FN)**: Solo 46 de 111,093 ataques.
-- **Tasa de Falsos Positivos (FPR)**: $\approx 0.13\%$.
-
-### Aportes en Interpretabilidad (XAI) y Calibración (ECE)
-
-- **Interpretabilidad (XAI)**:
-  - **LightGBM (Permutation Importance)**: Aprende la **firma de la herramienta atacante** (`Init_Win_bytes_forward`, `min_seg_size_forward`).
-  - **CNN-LSTM (KernelSHAP)**: Aprende el **efecto volumétrico temporal** (`Flow Bytes/s`, `Flow Duration`).
-- **Calibración de Confianza (ECE)**:
-  - **LightGBM**: Reducción del ECE de `0.000695` $\rightarrow$ `0.000073` mediante regresión isotónica.
-  - **CNN-LSTM**: Reducción del ECE de `0.024381` $\rightarrow$ `0.015389` mediante *Temperature Scaling*.
-
 ---
 
 ## 4. Arquitectura Modular
 
-El código ha sido completamente refactorizado siguiendo principios de **Programación Orientada a Objetos (POO)**, responsabilidad única y modularidad, manteniendo `main.py` como el nodo central de ejecución.
+El código está estructurado siguiendo principios de **Programación Orientada a Objetos (POO)**, responsabilidad única y modularidad, manteniendo [`main.py`](main.py) como nodo central de ejecución.
 
 ### Estructura del Proyecto
 
@@ -152,7 +202,7 @@ El código ha sido completamente refactorizado siguiendo principios de **Program
 tln02poster/
 ├── main.py                      # Nodo central de ejecución (CLIApplication)
 ├── requirements.txt             # Dependencias del proyecto
-├── README.md                    # Documentación integral
+├── README.md                    # Documentación integral y resultados
 ├── data/                        # Carpeta con múltiples archivos CSV de CIC-DDoS2019
 │   ├── DrDoS_DNS.csv
 │   ├── DrDoS_LDAP.csv
@@ -161,10 +211,7 @@ tln02poster/
 │   ├── DrDoS_NetBIOS.csv
 │   ├── DrDoS_SNMP.csv
 │   ├── DrDoS_SSDP.csv
-│   ├── DrDoS_UDP.csv
-│   ├── Syn.csv
-│   ├── TFTP.csv
-│   └── UDPLag.csv
+│   └── DrDoS_UDP.csv
 ├── src/                         # Paquete modular POO
 │   ├── __init__.py
 │   ├── config.py                # Clase ExperimentConfig (parámetros y constantes)
@@ -176,19 +223,24 @@ tln02poster/
 │   ├── reporting.py             # Clase ReportGenerator (exportación JSON, CSV y gráficas)
 │   └── pipeline.py              # Clase orquestadora DDoSDetectionPipeline
 └── resultados_poster/           # Salidas generadas por la ejecución
+    ├── resultados.json
+    ├── tabla_modelos.csv
+    ├── importancias.csv
+    ├── calibracion.csv
+    └── f1_modelos.png
 ```
 
 ### Diseño de Clases y Módulos
 
-- [`CLIApplication`] (`main.py`): Punto de entrada que procesa argumentos de consola (con `--data data` por defecto) e instancia el pipeline.
-- [`ExperimentConfig`] (`src/config.py`): Encapsula constantes del protocolo (19 atributos, longitudes de ventana, hiperparámetros de la tesis y rutas).
-- [`DataPreprocessor`] y [`DatasetManager`] (`src/dataset.py`): Gestionan la lectura multi-CSV desde `data/`, limpieza de etiquetas, submuestreo preservando el orden temporal y particionamiento estratificado tabular y secuencial sin fuga de datos.
-- [`BaseDetector`], [`LogisticRegressionDetector`], [`MLPDetector`], [`OptunaMLPTuner`], [`LightGBMDetector`] y [`CNNLSTMDetector`] (`src/models.py`): Polimorfismo y herencia para entrenar y predecir probabilidades con una interfaz unificada.
-- [`MetricsEvaluator`](`src/evaluation.py`): Calcula métricas de clasificación, construye la tabla comparativa y reporta la matriz de confusión.
-- [`ExplainabilityAnalyzer`](`src/explainability.py`): Ejecuta *Permutation Importance* sobre LightGBM y *KernelSHAP* sobre CNN-LSTM.
-- [`ConfidenceCalibrator`](`src/calibration.py`): Calcula ECE y Brier Score, ajustando calibradores isotónicos, sigmoideos (Platt) y escalado por temperatura ($T$).
-- [`ReportGenerator`](`src/reporting.py`): Serializa resultados en JSON, exporta tablas CSV y genera el gráfico comparativo `f1_modelos.png`.
-- [`DDoSDetectionPipeline`](`src/pipeline.py`): Coordina de extremo a extremo todas las etapas del protocolo experimental.
+- **`CLIApplication`** ([`main.py`](main.py)): Punto de entrada que procesa argumentos de consola (con `--data data` por defecto) e instancia el pipeline.
+- **`ExperimentConfig`** ([`src/config.py`](src/config.py)): Encapsula constantes del protocolo (19 atributos, longitudes de ventana, hiperparámetros de la tesis y rutas).
+- **`DataPreprocessor` y `DatasetManager`** ([`src/dataset.py`](src/dataset.py)): Gestionan la lectura optimizada multi-CSV desde `data/`, normalización de etiquetas, submuestreo preservando el orden temporal y particionamiento estratificado tabular y secuencial sin fuga de datos.
+- **`BaseDetector`, `LogisticRegressionDetector`, `MLPDetector`, `OptunaMLPTuner`, `LightGBMDetector` y `CNNLSTMDetector`** ([`src/models.py`](src/models.py)): Polimorfismo y herencia para entrenar y predecir probabilidades con una interfaz unificada.
+- **`MetricsEvaluator`** ([`src/evaluation.py`](src/evaluation.py)): Calcula métricas de clasificación, construye la tabla comparativa y reporta la matriz de confusión.
+- **`ExplainabilityAnalyzer`** ([`src/explainability.py`](src/explainability.py)): Ejecuta *Permutation Importance* sobre LightGBM y *KernelSHAP* sobre CNN-LSTM.
+- **`ConfidenceCalibrator`** ([`src/calibration.py`](src/calibration.py)): Calcula ECE y Brier Score, ajustando calibradores isotónicos, sigmoideos (Platt) y escalado por temperatura ($T$).
+- **`ReportGenerator`** ([`src/reporting.py`](src/reporting.py)): Serializa resultados en JSON, exporta tablas CSV y genera el gráfico comparativo `f1_modelos.png`.
+- **`DDoSDetectionPipeline`** ([`src/pipeline.py`](src/pipeline.py)): Coordina de extremo a extremo todas las etapas del protocolo experimental.
 
 ---
 
@@ -234,13 +286,13 @@ python main.py --data data --label-col Label --gpu
 
 ## 6. Artefactos de Salida
 
-Todos los resultados se almacenan automáticamente en `resultados_poster/` (o el directorio indicado en `--out`):
+Todos los resultados se almacenan automáticamente en [`resultados_poster/`](resultados_poster/) (o el directorio indicado en `--out`):
 
-- **`resultados.json`**: Resumen estructurado con estadísticas del dataset, métricas de cada modelo, matriz de confusión, top 3 de variables XAI y temperatura de calibración.
-- **`tabla_modelos.csv`**: Tabla comparativa ordenada por F1-Score con `f1`, `precision`, `recall`, `pr_auc`, `roc_auc` y `accuracy`.
-- **`importancias.csv`**: Ranking completo de los 19 atributos según *Permutation Importance* (LightGBM) y *KernelSHAP* (CNN-LSTM).
-- **`calibracion.csv`**: Valores de ECE y Brier Score antes y después de la calibración probabilística.
-- **`f1_modelos.png`**: Gráfico comparativo de F1-Score en alta resolución (200 DPI).
+- **[`resultados.json`](resultados_poster/resultados.json)**: Resumen estructurado con estadísticas del dataset, métricas de cada modelo, matriz de confusión, top 3 de variables XAI y temperatura de calibración.
+- **[`tabla_modelos.csv`](resultados_poster/tabla_modelos.csv)**: Tabla comparativa ordenada por F1-Score con `f1`, `precision`, `recall`, `pr_auc`, `roc_auc` y `accuracy`.
+- **[`importancias.csv`](resultados_poster/importancias.csv)**: Ranking completo de los 19 atributos según *Permutation Importance* (LightGBM) y *KernelSHAP* (CNN-LSTM).
+- **[`calibracion.csv`](resultados_poster/calibracion.csv)**: Valores de ECE y Brier Score antes y después de la calibración probabilística.
+- **[`f1_modelos.png`](resultados_poster/f1_modelos.png)**: Gráfico comparativo de F1-Score en alta resolución (200 DPI).
 
 ---
 
