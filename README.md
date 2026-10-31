@@ -3,10 +3,14 @@
 Repositorio oficial de respaldo experimental para el póster de investigación **"Sistemas de Detección de Ataques DDoS basados en Deep Learning en Entornos de Red"**. Este proyecto implementa una arquitectura modular con [`main.py`](main.py) como nodo central de ejecución sobre los múltiples archivos CSV del dataset **CIC-DDoS2019** ubicados en la carpeta [`data/`](data/).
 
 ---
+## Dataset
+
+El proyecto utiliza el conjunto de datos **CIC-DDoS2019** (específicamente el paquete `/CSVs/CSV-01-12.zip`), cuyos archivos CSV extraídos deben ubicarse dentro del directorio `data/`. Puede descargarse desde el portal oficial del Canadian Institute for Cybersecurity (UNB): [CIC-DDoS2019 Dataset](https://www.unb.ca/cic/datasets/ddos-2019.html).
 
 ## Tabla de Contenidos
 
 - [Sistemas de Detección de Ataques DDoS basados en Deep Learning en Entornos de Red](#sistemas-de-detección-de-ataques-ddos-basados-en-deep-learning-en-entornos-de-red)
+  - [Dataset](#dataset)
   - [Tabla de Contenidos](#tabla-de-contenidos)
   - [1. Introducción](#1-introducción)
     - [Taxonomía de Enfoques del Estado del Arte (2019–2024)](#taxonomía-de-enfoques-del-estado-del-arte-20192024)
