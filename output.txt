@@ -1,0 +1,84 @@
+(base) bydmacm1@MacBook-Air-M4-de-Fernando tln02poster % python3 main.py
+
+==============================================================================
+1. DATASET
+==============================================================================
+Cargando 8 archivo(s)...
+Flujos totales      : 28,001,999
+Atributos           : 19
+Ataques (clase 1)   : 27,974,480 (99.90%)
+Benignos (clase 0)  : 27,519 (0.10%)
+Train / Val / Test  : 19,601,399 / 2,800,200 / 5,600,400
+
+==============================================================================
+2. MODELOS TABULARES
+==============================================================================
+Regresión Logística (línea base)...
+  Regresión Logística      F1=0.9981  P=1.0000  R=0.9963  PR-AUC=1.0000  ROC-AUC=0.9997  Acc=0.9963
+MLP (original)...
+2026-10-31 00:43:36.109789: I metal_plugin/src/device/metal_device.cc:1154] Metal device set to: Apple M4
+2026-10-31 00:43:36.109989: I metal_plugin/src/device/metal_device.cc:296] systemMemory: 16.00 GB
+2026-10-31 00:43:36.109995: I metal_plugin/src/device/metal_device.cc:313] maxCacheSize: 5.92 GB
+2026-10-31 00:43:36.110052: I tensorflow/core/common_runtime/pluggable_device/pluggable_device_factory.cc:305] Could not identify NUMA node of platform GPU ID 0, defaulting to 0. Your kernel may not have been built with NUMA support.
+2026-10-31 00:43:36.110300: I tensorflow/core/common_runtime/pluggable_device/pluggable_device_factory.cc:271] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 0 MB memory) -> physical PluggableDevice (device: 0, name: METAL, pci bus id: <undefined>)
+2026-10-31 00:43:38.991663: I tensorflow/core/grappler/optimizers/custom_graph_optimizer_registry.cc:117] Plugin optimizer for device_type GPU is enabled.
+
+
+  MLP (original)           F1=0.9992  P=1.0000  R=0.9985  PR-AUC=1.0000  ROC-AUC=0.9994  Acc=0.9985
+MLP (Optuna): usando hiperparámetros reportados en la tesis: {'n_layers': 2, 'n_units': 128, 'dropout_rate': 0.334, 'lr': 0.000126, 'batch_size': 512}
+
+  MLP (Optuna)             F1=0.9989  P=1.0000  R=0.9979  PR-AUC=1.0000  ROC-AUC=0.9995  Acc=0.9979
+LightGBM...
+  LightGBM                 F1=0.9999  P=1.0000  R=0.9999  PR-AUC=1.0000  ROC-AUC=1.0000  Acc=0.9999
+
+==============================================================================
+3. MATRIZ DE CONFUSIÓN - LightGBM (conjunto de prueba)
+==============================================================================
+  Verdadero negativo : 5,493
+  Falso positivo     : 11
+  Falso negativo     : 749
+  Verdadero positivo : 5,594,147
+  Flujos de prueba   : 5,600,400
+  FPR                : 0.1999%
+
+==============================================================================
+4. MODELO SECUENCIAL (CNN-LSTM)
+==============================================================================
+Secuencias: (5600396, 20, 19)  (SEQ_LEN=20, stride=5)
+
+
+  CNN-LSTM                 F1=0.9986  P=1.0000  R=0.9972  PR-AUC=1.0000  ROC-AUC=0.9995  Acc=0.9972
+
+==============================================================================
+5. COMPARATIVA GLOBAL (tabla del póster)
+==============================================================================
+             modelo    enfoque     f1  precision  recall  pr_auc  roc_auc  accuracy
+Regresión Logística    Tabular 0.9981        1.0  0.9963     1.0   0.9997    0.9963
+           CNN-LSTM Secuencial 0.9986        1.0  0.9972     1.0   0.9995    0.9972
+       MLP (Optuna)    Tabular 0.9989        1.0  0.9979     1.0   0.9995    0.9979
+     MLP (original)    Tabular 0.9992        1.0  0.9985     1.0   0.9994    0.9985
+           LightGBM    Tabular 0.9999        1.0  0.9999     1.0   1.0000    0.9999
+
+==============================================================================
+6. INTERPRETABILIDAD (top 3)
+==============================================================================
+LightGBM - Permutation Importance (caída de F1):
+  1. Fwd Packet Length Mean       0.0005
+  2. Init_Win_bytes_forward       0.0005
+  3. Flow Bytes/s                 0.0002
+100%|████████████████████████████████████████████████████████████████████████████| 100/100 [00:22<00:00,  4.35it/s]
+CNN-LSTM - KernelSHAP (|SHAP| medio, agregado en los 20 pasos):
+  1. Init_Win_bytes_forward       0.0006
+  2. Flow Bytes/s                 0.0005
+  3. Fwd Packet Length Max        0.0004
+
+==============================================================================
+7. CALIBRACIÓN DE CONFIANZA (ECE y Brier)
+==============================================================================
+  LightGBM   original               ECE=0.000644  Brier=0.000118
+  LightGBM   isotónica              ECE=0.000005  Brier=0.000012
+  LightGBM   sigmoide (Platt)       ECE=0.000017  Brier=0.000016
+  CNN-LSTM   original               ECE=0.003085  Brier=0.002094
+  CNN-LSTM   temperature (T=1.228)  ECE=0.003638  Brier=0.002037
+
+Listo en 83.6 min. Resultados en: /Users/bydmacm1/01_GitProjects/tln02poster/resultados_poster

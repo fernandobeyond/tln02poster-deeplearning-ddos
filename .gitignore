@@ -10,13 +10,6 @@ venv/
 env/
 ENV/
 
-*.png
-resultados.json
-tabla_modelos.csv
-importancias.csv
-calibracion.csv
-
-*.csv
 data/
 datasets/
 

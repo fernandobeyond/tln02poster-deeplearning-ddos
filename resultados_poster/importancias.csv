@@ -1,0 +1,39 @@
+modelo,metodo,rango,atributo,valor
+LightGBM,permutation,1,Fwd Packet Length Mean,0.0005274319474414627
+LightGBM,permutation,2,Init_Win_bytes_forward,0.000490696828333026
+LightGBM,permutation,3,Flow Bytes/s,0.0002168925518873562
+LightGBM,permutation,4,Fwd Packet Length Min,0.0002051758244686619
+LightGBM,permutation,5,min_seg_size_forward,0.00012014351978828497
+LightGBM,permutation,6,Total Backward Packets,5.00565634470318e-05
+LightGBM,permutation,7,Total Fwd Packets,3.670766214321682e-05
+LightGBM,permutation,8,Flow Duration,1.5016459605776689e-05
+LightGBM,permutation,9,Init_Win_bytes_backward,1.5016442903581506e-05
+LightGBM,permutation,10,Flow Packets/s,5.005447564173278e-06
+LightGBM,permutation,11,act_data_pkt_fwd,5.0054308624591926e-06
+LightGBM,permutation,12,Total Length of Bwd Packets,1.6684769541530642e-06
+LightGBM,permutation,13,Idle Mean,0.0
+LightGBM,permutation,14,Bwd Packet Length Max,0.0
+LightGBM,permutation,15,Active Mean,0.0
+LightGBM,permutation,16,Bwd Packet Length Mean,0.0
+LightGBM,permutation,17,Bwd Packet Length Min,0.0
+LightGBM,permutation,18,Fwd Packet Length Max,-3.169987635731619e-05
+LightGBM,permutation,19,Total Length of Fwd Packets,-5.171984625740311e-05
+CNN-LSTM,kernelshap,1,Init_Win_bytes_forward,0.000585725804877408
+CNN-LSTM,kernelshap,2,Flow Bytes/s,0.0005169831206918031
+CNN-LSTM,kernelshap,3,Fwd Packet Length Max,0.0004398614743728711
+CNN-LSTM,kernelshap,4,Fwd Packet Length Mean,0.0003654666324577256
+CNN-LSTM,kernelshap,5,Fwd Packet Length Min,0.0003430457797158554
+CNN-LSTM,kernelshap,6,Flow Packets/s,0.00023919601504973512
+CNN-LSTM,kernelshap,7,Total Length of Fwd Packets,0.0002316077432884168
+CNN-LSTM,kernelshap,8,Flow Duration,0.0002051710371041954
+CNN-LSTM,kernelshap,9,min_seg_size_forward,0.00011275676610351838
+CNN-LSTM,kernelshap,10,act_data_pkt_fwd,0.00011060705271211316
+CNN-LSTM,kernelshap,11,Total Fwd Packets,8.964914057870289e-05
+CNN-LSTM,kernelshap,12,Init_Win_bytes_backward,2.5959050380402463e-05
+CNN-LSTM,kernelshap,13,Total Backward Packets,5.064292544530219e-06
+CNN-LSTM,kernelshap,14,Total Length of Bwd Packets,0.0
+CNN-LSTM,kernelshap,15,Idle Mean,0.0
+CNN-LSTM,kernelshap,16,Bwd Packet Length Max,0.0
+CNN-LSTM,kernelshap,17,Active Mean,0.0
+CNN-LSTM,kernelshap,18,Bwd Packet Length Mean,0.0
+CNN-LSTM,kernelshap,19,Bwd Packet Length Min,0.0
